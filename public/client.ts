@@ -27,17 +27,25 @@ socket.onmessage = (event: MessageEvent) => {
 };
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
-  if (["w", "a", "s", "d"].indexOf(e.key) !== -1) {
+  if (["w", "a", "s", "d", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.key) !== -1) {
     socket.send(JSON.stringify({ type: "move", dir: keyToDir(e.key) }));
   }
 });
 
+document.getElementById("controls")!.addEventListener("click", (e: MouseEvent) => {
+    const target = e.target as HTMLButtonElement;
+    if (target.tagName === "BUTTON") {
+        const dir = target.id;
+        socket.send(JSON.stringify({ type: "move", dir }));
+    }
+});
+
 function keyToDir(key: string): string {
   switch (key) {
-    case "w": return "up";
-    case "s": return "down";
-    case "a": return "left";
-    case "d": return "right";
+    case "w": case "ArrowUp": return "up";
+    case "s": case "ArrowDown": return "down";
+    case "a": case "ArrowLeft": return "left";
+    case "d": case "ArrowRight": return "right";
     default: return "";
   }
 }
