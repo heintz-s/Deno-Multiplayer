@@ -1,6 +1,7 @@
 var canvas = document.getElementById("game");
 var ctx = canvas.getContext("2d");
-var socket = new WebSocket("ws://".concat(location.host, "/ws"));
+var protocol = location.protocol === "https:" ? "wss:" : "ws:";
+var socket = new WebSocket("".concat(protocol, "//").concat(location.host, "/ws"));
 var myId = null;
 var players = {};
 socket.onmessage = function (event) {

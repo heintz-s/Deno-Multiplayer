@@ -7,7 +7,8 @@ interface Player {
 const canvas = document.getElementById("game") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 
-const socket = new WebSocket(`ws://${location.host}/ws`);
+const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+const socket = new WebSocket(`${protocol}//${location.host}/ws`);
 let myId: string | null = null;
 let players: Record<string, Player> = {};
 
