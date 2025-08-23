@@ -1,6 +1,3 @@
-// server.ts
-import { serve } from "https://deno.land/std@0.202.0/http/server.ts";
-
 interface Player {
   id: string;
   x: number;
@@ -18,7 +15,7 @@ function broadcast(message: unknown, except?: string) {
   }
 }
 
-serve((req) => {
+Deno.serve((req) => {
   const { pathname } = new URL(req.url);
 
   // Static file serving
