@@ -15,8 +15,8 @@ function broadcast(message: unknown, except?: string) {
   }
 }
 
-Deno.serve((req) => {
-  const { pathname } = new URL(req.url);
+Deno.serve((request) => {
+  const { pathname } = new URL(request.url);
 
   // Static file serving
   if (pathname === "/") {
@@ -33,19 +33,23 @@ Deno.serve((req) => {
 
   // WebSocket for game
   if (pathname === "/ws") {
-    const { socket, response } = Deno.upgradeWebSocket(req);
+    if (request.headers.get("upgrade") !== "websocket") {
+      return new Response(null, { status: 501 });
+    }
+    
+    const { socket, response } = Deno.upgradeWebSocket(request);
     const id = crypto.randomUUID();
 
     players[id] = { id, x: 100, y: 100 };
     sockets.set(id, socket);
 
-    socket.onopen = () => {
+    socket.addEventListener("open", () => {
       console.log(`Player ${id} connected`);
       socket.send(JSON.stringify({ type: "init", id, players }));
       broadcast({ type: "join", player: players[id] }, id);
-    };
+    });
 
-    socket.onmessage = (event) => {
+    socket.addEventListener("message", (event) => {
       const msg = JSON.parse(event.data);
       if (msg.type === "move") {
         const p = players[id];
@@ -56,14 +60,14 @@ Deno.serve((req) => {
         if (msg.dir === "right") p.x += 10;
         broadcast({ type: "update", player: p });
       }
-    };
+    });
 
-    socket.onclose = () => {
+    socket.addEventListener("close", () => {
       console.log(`Player ${id} disconnected`);
       delete players[id];
       sockets.delete(id);
       broadcast({ type: "leave", id });
-    };
+    });
 
     return response;
   }

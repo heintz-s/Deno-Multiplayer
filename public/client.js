@@ -4,7 +4,7 @@ var protocol = location.protocol === "https:" ? "wss:" : "ws:";
 var socket = new WebSocket("".concat(protocol, "//").concat(location.host, "/ws"));
 var myId = null;
 var players = {};
-socket.onmessage = function (event) {
+socket.addEventListener("message", function (event) {
     var msg = JSON.parse(event.data);
     if (msg.type === "init") {
         myId = msg.id;
@@ -19,7 +19,7 @@ socket.onmessage = function (event) {
     else if (msg.type === "leave") {
         delete players[msg.id];
     }
-};
+});
 document.addEventListener("keydown", function (e) {
     if (["w", "a", "s", "d", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.key) !== -1) {
         socket.send(JSON.stringify({ type: "move", dir: keyToDir(e.key) }));

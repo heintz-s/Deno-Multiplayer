@@ -12,7 +12,7 @@ const socket = new WebSocket(`${protocol}//${location.host}/ws`);
 let myId: string | null = null;
 let players: Record<string, Player> = {};
 
-socket.onmessage = (event: MessageEvent) => {
+socket.addEventListener("message", (event: MessageEvent) => {
   const msg = JSON.parse(event.data);
   if (msg.type === "init") {
     myId = msg.id;
@@ -24,7 +24,7 @@ socket.onmessage = (event: MessageEvent) => {
   } else if (msg.type === "leave") {
     delete players[msg.id];
   }
-};
+});
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (["w", "a", "s", "d", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.key) !== -1) {
